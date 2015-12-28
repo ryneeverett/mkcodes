@@ -19,8 +19,8 @@ class TestBase(unittest.TestCase):
 
     @classmethod
     def call(cls, *flags, inputfile='tests/data/some.md'):
-        subprocess.call([
-            'mkcodes', '--output', cls.output, *flags, inputfile])
+        subprocess.call(
+            ['mkcodes', '--output', cls.output] + list(flags) + [inputfile])
 
     def assertFileEqual(self, filename, expected):
         with open(filename, 'r') as output:
