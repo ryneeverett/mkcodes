@@ -24,3 +24,13 @@ My purpose is testing.
 You can easily enough doctest a markdown file with `python -m doctest myfile.md`, but I don't like typing or looking at a whole bunch of `>>>` and `...`'s. Also there's no way that I know of to run linters against such code blocks.
 
 Instead, I include (pytest) functional tests in my codeblocks, extract the code blocks with this script, and then run my test runner and linters against the output files.
+
+Running Tests
+-------------
+
+```sh
+cd /path/to/mkcodes
+python setup.py develop
+pip install -r test-requirements.txt
+./test
+```
