@@ -14,6 +14,14 @@ else:
     from markdown.treeprocessors import Treeprocessor
 
 
+def iglob(input):
+    try:
+        return glob.iglob(input + '/**', recursive=True)
+    except TypeError:
+        warnings.warn('In python<3.5, inputs are not recursive.')
+        return glob.iglob(input + '/*')
+
+
 def default_state():
     return [], True, False
 
@@ -79,8 +87,7 @@ def is_markdown(f):
 def get_files(inputs):
     for i in inputs:
         if os.path.isdir(i):
-            yield from filter(
-                is_markdown, glob.iglob(i + '/**', recursive=True))
+            yield from filter(is_markdown, iglob(i))
         elif is_markdown(i):
             yield i
 
