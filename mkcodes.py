@@ -29,7 +29,7 @@ def default_state():
 def github_codeblocks(filename, safe):
     codeblocks = []
     codeblock_re = r'^```.*'
-    codeblock_open_re = r'^```(py|python){0}$'.format('' if safe else '?')
+    codeblock_open_re = r'^```(`*)(py|python){0}$'.format('' if safe else '?')
 
     with open(filename, 'r') as f:
         block = []

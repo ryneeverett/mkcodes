@@ -13,3 +13,9 @@ bar = False
 Some daring-fireball-flavored code:
 
     baz = None
+
+More than 3 backticks is allowed:
+
+`````py
+backticks = range(5, 7)
+```````

@@ -39,6 +39,9 @@ class TestMarkdown(TestBase):
         self.call('--github', '--safe')
         self.assertOutput("""\
             bar = False
+
+
+            backticks = range(5, 7)
             """)
 
     def test_markdown_unsafe(self):
@@ -54,6 +57,9 @@ class TestMarkdown(TestBase):
 
 
             bar = False
+
+
+            backticks = range(5, 7)
             """)
 
 
@@ -77,6 +83,9 @@ class TestInputs(TestBase):
                 'tests/data/some.md', 'tests/data/other.md'])
             self.assertFileEqual('tests/some.py', """\
                 bar = False
+
+
+                backticks = range(5, 7)
                 """)
             self.assertFileEqual('tests/other.py', """\
                 qux = 4
