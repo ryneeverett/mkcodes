@@ -14,24 +14,16 @@ else:
     from markdown.treeprocessors import Treeprocessor
 
 
-def iglob(input):
-    try:
-        return glob.iglob(input + '/**', recursive=True)
-    except TypeError:
-        warnings.warn('In python<3.5, inputs are not recursive.')
-        return glob.iglob(input + '/*')
-
-
 def default_state():
     return [], True, False
 
 
-def github_codeblocks(filename, safe):
+def github_codeblocks(filepath, safe):
     codeblocks = []
     codeblock_re = r'^```.*'
     codeblock_open_re = r'^```(`*)(py|python){0}$'.format('' if safe else '?')
 
-    with open(filename, 'r') as f:
+    with open(filepath, 'r') as f:
         block = []
         python = True
         in_codeblock = False
@@ -55,7 +47,7 @@ def github_codeblocks(filename, safe):
     return codeblocks
 
 
-def markdown_codeblocks(filename, safe):
+def markdown_codeblocks(filepath, safe):
     import markdown
 
     codeblocks = []
@@ -75,7 +67,7 @@ def markdown_codeblocks(filename, safe):
 
     doctestextension = DoctestExtension()
     markdowner = markdown.Markdown(extensions=[doctestextension])
-    markdowner.convertFile(filename, output=os.devnull)
+    markdowner.convertFile(filepath, output=os.devnull)
     return codeblocks
 
 
@@ -84,12 +76,20 @@ def is_markdown(f):
     return os.path.splitext(f)[1] in markdown_extensions
 
 
+def get_nested_files(directory, depth):
+    for i in glob.iglob(directory + '/*'):
+        if os.path.isdir(i):
+            yield from get_nested_files(i, depth+1)
+        elif is_markdown(i):
+            yield (i, depth)
+
+
 def get_files(inputs):
     for i in inputs:
         if os.path.isdir(i):
-            yield from filter(is_markdown, iglob(i))
+            yield from get_nested_files(i, 0)
         elif is_markdown(i):
-            yield i
+            yield (i, 0)
 
 
 @click.command()
@@ -103,11 +103,13 @@ def get_files(inputs):
 def main(inputs, output, github, safe):
     collect_codeblocks = github_codeblocks if github else markdown_codeblocks
 
-    for filename in get_files(inputs):
-        code = '\n\n'.join(collect_codeblocks(filename, safe))
+    for filepath, depth in get_files(inputs):
+        code = '\n\n'.join(collect_codeblocks(filepath, safe))
 
-        inputname = os.path.splitext(os.path.basename(filename))[0]
-        outputfilename = output.format(name=inputname)
+        filename = os.path.splitext(filepath)[0]
+        outputname = os.sep.join(filename.split(os.sep)[-1-depth:])
+
+        outputfilename = output.format(name=outputname)
 
         outputdir = os.path.dirname(outputfilename)
         if not os.path.exists(outputdir):

@@ -77,6 +77,19 @@ class TestInputs(TestBase):
         self.call(inputfile='tests/data')
         self.assertTrue(os.path.exists(self.output))
 
+    def test_directory_recursive(self):
+        try:
+            subprocess.call([
+                'mkcodes', '--output', 'tests/{name}.py', '--github',
+                'tests/data'])
+            self.assertTrue(os.path.exists('tests/some.py'))
+            self.assertTrue(os.path.exists('tests/other.py'))
+            self.assertTrue(os.path.exists('tests/nest/deep.py'))
+        finally:
+            self.remove('tests/some.py')
+            self.remove('tests/other.py')
+            shutil.rmtree('tests/nest', ignore_errors=True)
+
     def test_multiple(self):
         try:
             subprocess.call([
@@ -91,6 +104,7 @@ class TestInputs(TestBase):
             self.assertFileEqual('tests/other.py', """\
                 qux = 4
                 """)
+            self.assertFalse(os.path.exists('tests/nest/deep.py'))
         finally:
             self.remove('tests/some.py')
             self.remove('tests/other.py')
@@ -107,7 +121,7 @@ class TestInputs(TestBase):
                 backticks = range(5, 7)
                 """)
         finally:
-            shutil.rmtree('tests/unexistant')
+            shutil.rmtree('tests/unexistant', ignore_errors=True)
 
     @unittest.skip
     def test_glob(self):
