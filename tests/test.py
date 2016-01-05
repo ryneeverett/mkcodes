@@ -73,6 +73,11 @@ class TestInputs(TestBase):
         self.call()
         self.assertTrue(os.path.exists(self.output))
 
+    def test_file_without_code(self):
+        """Code files should not be written for markdown files with no code."""
+        self.call(inputfile='tests/data/nocode.md')
+        self.assertFalse(os.path.exists('tests/nocode.py'))
+
     def test_directory(self):
         self.call(inputfile='tests/data')
         self.assertTrue(os.path.exists(self.output))

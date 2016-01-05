@@ -100,18 +100,19 @@ def main(inputs, output, github, safe):
     collect_codeblocks = github_codeblocks if github else markdown_codeblocks
 
     for filepath, depth in get_files(inputs):
-        code = '\n\n'.join(collect_codeblocks(filepath, safe))
+        codeblocks = collect_codeblocks(filepath, safe)
 
-        filename = os.path.splitext(filepath)[0]
-        outputname = os.sep.join(filename.split(os.sep)[-1-depth:])
+        if codeblocks:
+            filename = os.path.splitext(filepath)[0]
+            outputname = os.sep.join(filename.split(os.sep)[-1-depth:])
 
-        outputfilename = output.format(name=outputname)
+            outputfilename = output.format(name=outputname)
 
-        outputdir = os.path.dirname(outputfilename)
-        if not os.path.exists(outputdir):
-            os.makedirs(outputdir)
-            with open(os.path.join(outputdir, '__init__.py'), 'w'):
-                pass
+            outputdir = os.path.dirname(outputfilename)
+            if not os.path.exists(outputdir):
+                os.makedirs(outputdir)
+                with open(os.path.join(outputdir, '__init__.py'), 'w'):
+                    pass
 
-        with open(outputfilename, 'w') as outputfile:
-            outputfile.write(code)
+            with open(outputfilename, 'w') as outputfile:
+                outputfile.write('\n\n'.join(codeblocks))
