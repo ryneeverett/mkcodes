@@ -14,10 +14,6 @@ else:
     from markdown.treeprocessors import Treeprocessor
 
 
-def default_state():
-    return [], True, False
-
-
 def github_codeblocks(filepath, safe):
     codeblocks = []
     codeblock_re = r'^```.*'
