@@ -59,51 +59,58 @@ class TestMarkdown(TestBase):
 
 
 class TestInputs(TestBase):
+    def assertOutputFileEqual(self, filename, expected):
+        self.assertFileEqual(os.path.join('tests/output', filename), expected)
+
+    @staticmethod
+    def _output_path_exists(path):
+        return os.path.exists(os.path.join('tests/output', path))
+
     @classmethod
     def call(cls, **kwargs):
         super().call('--github', **kwargs)
 
     def test_file(self):
         self.call()
-        self.assertTrue(os.path.exists(self.outputfile))
+        self.assertTrue(self._output_path_exists('output.py'))
 
     def test_file_without_code(self):
         """Code files should not be written for markdown files with no code."""
         self.call(inputfile='tests/data/nocode.md')
-        self.assertFalse(os.path.exists('tests/output/nocode.py'))
+        self.assertFalse(self._output_path_exists('nocode.py'))
 
     def test_directory(self):
         self.call(inputfile='tests/data')
-        self.assertTrue(os.path.exists(self.outputfile))
+        self.assertTrue(self._output_path_exists('output.py'))
 
     def test_directory_recursive(self):
         subprocess.call([
             'mkcodes', '--output', 'tests/output/{name}.py', '--github',
             'tests/data'])
-        self.assertTrue(os.path.exists('tests/output/some.py'))
-        self.assertTrue(os.path.exists('tests/output/other.py'))
-        self.assertTrue(os.path.exists('tests/output/nest/deep.py'))
+        self.assertTrue(self._output_path_exists('some.py'))
+        self.assertTrue(self._output_path_exists('other.py'))
+        self.assertTrue(self._output_path_exists('nest/deep.py'))
 
     def test_multiple(self):
         subprocess.call([
             'mkcodes', '--output', 'tests/output/{name}.py', '--github',
             'tests/data/some.md', 'tests/data/other.md'])
-        self.assertFileEqual('tests/output/some.py', """\
+        self.assertOutputFileEqual('some.py', """\
             bar = False
 
 
             backticks = range(5, 7)
             """)
-        self.assertFileEqual('tests/output/other.py', """\
+        self.assertOutputFileEqual('other.py', """\
             qux = 4
             """)
-        self.assertFalse(os.path.exists('tests/output/nest/deep.py'))
+        self.assertFalse(self._output_path_exists('nest/deep.py'))
 
     def test_unexistant_output_directory(self):
         subprocess.call([
             'mkcodes', '--output', 'tests/output/unexistant/{name}.py',
             '--github', 'tests/data/some.md'])
-        self.assertFileEqual('tests/output/unexistant/some.py', """\
+        self.assertOutputFileEqual('unexistant/some.py', """\
             bar = False
 
 
