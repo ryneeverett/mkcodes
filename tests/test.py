@@ -1,4 +1,5 @@
 import os
+import shutil
 import textwrap
 import unittest
 import subprocess
@@ -93,6 +94,20 @@ class TestInputs(TestBase):
         finally:
             self.remove('tests/some.py')
             self.remove('tests/other.py')
+
+    def test_unexistant_output_directory(self):
+        try:
+            subprocess.call([
+                'mkcodes', '--output', 'tests/unexistant/{name}.py',
+                '--github', 'tests/data/some.md'])
+            self.assertFileEqual('tests/unexistant/some.py', """\
+                bar = False
+
+
+                backticks = range(5, 7)
+                """)
+        finally:
+            shutil.rmtree('tests/unexistant')
 
     @unittest.skip
     def test_glob(self):

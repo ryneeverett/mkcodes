@@ -109,5 +109,9 @@ def main(inputs, output, github, safe):
         inputname = os.path.splitext(os.path.basename(filename))[0]
         outputfilename = output.format(name=inputname)
 
+        outputdir = os.path.dirname(outputfilename)
+        if not os.path.exists(outputdir):
+            os.makedirs(outputdir)
+
         with open(outputfilename, 'w') as outputfile:
             outputfile.write(code)
