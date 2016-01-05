@@ -6,32 +6,26 @@ import subprocess
 
 
 class TestBase(unittest.TestCase):
-    output = 'tests/output.py'
+    outputfile = 'tests/output/output.py'
 
     def tearDown(self):
-        self.remove(self.output)
-
-    @staticmethod
-    def remove(f):
-        try:
-            os.remove(f)
-        except FileNotFoundError:
-            pass
+        shutil.rmtree('tests/output', ignore_errors=True)
 
     @classmethod
     def call(cls, *flags, inputfile='tests/data/some.md'):
-        subprocess.call(
-            ['mkcodes', '--output', cls.output] + list(flags) + [inputfile])
+        subprocess.call([
+            'mkcodes', '--output', cls.outputfile] + list(flags) + [inputfile])
 
     def assertFileEqual(self, filename, expected):
         with open(filename, 'r') as output:
             self.assertEqual(output.read(), textwrap.dedent(expected))
 
-    def assertOutput(self, expected):
-        self.assertFileEqual(self.output, expected)
-
 
 class TestMarkdown(TestBase):
+
+    def assertOutput(self, expected):
+        self.assertFileEqual(self.outputfile, expected)
+
     @unittest.skip
     def test_markdown_safe(self):
         raise NotImplementedError
@@ -71,62 +65,50 @@ class TestInputs(TestBase):
 
     def test_file(self):
         self.call()
-        self.assertTrue(os.path.exists(self.output))
+        self.assertTrue(os.path.exists(self.outputfile))
 
     def test_file_without_code(self):
         """Code files should not be written for markdown files with no code."""
         self.call(inputfile='tests/data/nocode.md')
-        self.assertFalse(os.path.exists('tests/nocode.py'))
+        self.assertFalse(os.path.exists('tests/output/nocode.py'))
 
     def test_directory(self):
         self.call(inputfile='tests/data')
-        self.assertTrue(os.path.exists(self.output))
+        self.assertTrue(os.path.exists(self.outputfile))
 
     def test_directory_recursive(self):
-        try:
-            subprocess.call([
-                'mkcodes', '--output', 'tests/{name}.py', '--github',
-                'tests/data'])
-            self.assertTrue(os.path.exists('tests/some.py'))
-            self.assertTrue(os.path.exists('tests/other.py'))
-            self.assertTrue(os.path.exists('tests/nest/deep.py'))
-        finally:
-            self.remove('tests/some.py')
-            self.remove('tests/other.py')
-            shutil.rmtree('tests/nest', ignore_errors=True)
+        subprocess.call([
+            'mkcodes', '--output', 'tests/output/{name}.py', '--github',
+            'tests/data'])
+        self.assertTrue(os.path.exists('tests/output/some.py'))
+        self.assertTrue(os.path.exists('tests/output/other.py'))
+        self.assertTrue(os.path.exists('tests/output/nest/deep.py'))
 
     def test_multiple(self):
-        try:
-            subprocess.call([
-                'mkcodes', '--output', 'tests/{name}.py', '--github',
-                'tests/data/some.md', 'tests/data/other.md'])
-            self.assertFileEqual('tests/some.py', """\
-                bar = False
+        subprocess.call([
+            'mkcodes', '--output', 'tests/output/{name}.py', '--github',
+            'tests/data/some.md', 'tests/data/other.md'])
+        self.assertFileEqual('tests/output/some.py', """\
+            bar = False
 
 
-                backticks = range(5, 7)
-                """)
-            self.assertFileEqual('tests/other.py', """\
-                qux = 4
-                """)
-            self.assertFalse(os.path.exists('tests/nest/deep.py'))
-        finally:
-            self.remove('tests/some.py')
-            self.remove('tests/other.py')
+            backticks = range(5, 7)
+            """)
+        self.assertFileEqual('tests/output/other.py', """\
+            qux = 4
+            """)
+        self.assertFalse(os.path.exists('tests/output/nest/deep.py'))
 
     def test_unexistant_output_directory(self):
-        try:
-            subprocess.call([
-                'mkcodes', '--output', 'tests/unexistant/{name}.py',
-                '--github', 'tests/data/some.md'])
-            self.assertFileEqual('tests/unexistant/some.py', """\
-                bar = False
+        subprocess.call([
+            'mkcodes', '--output', 'tests/output/unexistant/{name}.py',
+            '--github', 'tests/data/some.md'])
+        self.assertFileEqual('tests/output/unexistant/some.py', """\
+            bar = False
 
 
-                backticks = range(5, 7)
-                """)
-        finally:
-            shutil.rmtree('tests/unexistant', ignore_errors=True)
+            backticks = range(5, 7)
+            """)
 
     @unittest.skip
     def test_glob(self):
