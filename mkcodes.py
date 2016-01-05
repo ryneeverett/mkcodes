@@ -110,6 +110,8 @@ def main(inputs, output, github, safe):
         outputdir = os.path.dirname(outputfilename)
         if not os.path.exists(outputdir):
             os.makedirs(outputdir)
+            with open(os.path.join(outputdir, '__init__.py'), 'w'):
+                pass
 
         with open(outputfilename, 'w') as outputfile:
             outputfile.write(code)
