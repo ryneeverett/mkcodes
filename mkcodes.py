@@ -91,7 +91,7 @@ def get_files(inputs):
 def makedirs(directory):
     to_make = []
 
-    while True:
+    while directory:
         try:
             os.mkdir(directory)
         except FileNotFoundError:
