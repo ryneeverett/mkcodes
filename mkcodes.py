@@ -80,24 +80,6 @@ def get_files(inputs):
             yield path, path.parent
 
 
-def makedirs(directory):
-    to_make = []
-
-    while directory:
-        try:
-            os.mkdir(directory)
-        except FileNotFoundError:
-            directory, tail = os.path.split(directory)
-            to_make.append(tail)
-        else:
-            with open(os.path.join(directory, '__init__.py'), 'w'):
-                pass
-            if to_make:
-                directory = os.path.join(directory, to_make.pop())
-            else:
-                break
-
-
 @click.command()
 @click.argument(
     'inputs', nargs=-1, required=True, type=click.Path(exists=True))
@@ -120,9 +102,6 @@ def main(inputs, output, github, safe):
             filename = fp.stem
             outputfilename = outputbasedir / filedir / outputbasename.format(name=filename)
 
-            outputdir = os.path.dirname(outputfilename)
-            if not os.path.exists(outputdir):
-                makedirs(outputdir)
+            outputfilename.parent.mkdir(parents=True, exist_ok=True)
+            outputfilename.write_text('\n\n'.join(codeblocks))
 
-            with open(outputfilename, 'w') as outputfile:
-                outputfile.write('\n\n'.join(codeblocks))
