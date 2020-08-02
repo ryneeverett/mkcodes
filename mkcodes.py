@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import re
 import glob
 import warnings
@@ -63,29 +64,23 @@ def markdown_codeblocks(filepath, safe):
 
     doctestextension = DoctestExtension()
     markdowner = markdown.Markdown(extensions=[doctestextension])
-    markdowner.convertFile(filepath, output=os.devnull)
+    markdowner.convertFile(str(filepath), output=os.devnull)
     return codeblocks
 
 
-def is_markdown(f):
-    markdown_extensions = ['.markdown', '.mdown', '.mkdn', '.mkd', '.md']
-    return os.path.splitext(f)[1] in markdown_extensions
-
-
-def get_nested_files(directory, depth):
-    for i in glob.iglob(directory + '/*'):
-        if os.path.isdir(i):
-            yield from get_nested_files(i, depth+1)
-        elif is_markdown(i):
-            yield (i, depth)
-
-
 def get_files(inputs):
+    """ Take in an iterable of paths, yield the files and parent dirs in those paths"""
+    markdown_extensions = ['.markdown', '.mdown', '.mkdn', '.mkd', '.md']
     for i in inputs:
-        if os.path.isdir(i):
-            yield from get_nested_files(i, 0)
-        elif is_markdown(i):
-            yield (i, 0)
+        path = Path(i)
+        if path.is_dir():
+            """ let's iterate the directory and yield files """
+            for child in path.rglob('*'):
+                if child.is_file() and child.suffix in markdown_extensions:
+                    yield child, path
+        else:
+            if path.suffix in markdown_extensions:
+                yield path, path.parent
 
 
 def makedirs(directory):
@@ -116,15 +111,23 @@ def makedirs(directory):
               help='Allow code blocks without language hints.')
 def main(inputs, output, github, safe):
     collect_codeblocks = github_codeblocks if github else markdown_codeblocks
+    # to output deep trees with a file pattern
+    # we should break out the directory and the filename pattern
+    outputbasedir = Path(output).parent
+    outputbasename = Path(output).name
 
-    for filepath, depth in get_files(inputs):
+    for filepath, input_path in get_files(inputs):
         codeblocks = collect_codeblocks(filepath, safe)
 
         if codeblocks:
-            filename = os.path.splitext(filepath)[0]
-            outputname = os.sep.join(filename.split(os.sep)[-1-depth:])
+            #we want the path to the file, and the file without an extension
+            fp = Path(filepath)
+            filedir =fp.parent.relative_to(input_path)
+            filename = fp.stem
 
-            outputfilename = output.format(name=outputname)
+            # stitch together the OUTPUT base directory, with the input directories
+            # add the file format at the end.
+            outputfilename = outputbasedir / filedir / outputbasename.format(name=filename)
 
             outputdir = os.path.dirname(outputfilename)
             if not os.path.exists(outputdir):
