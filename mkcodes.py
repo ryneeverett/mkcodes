@@ -88,7 +88,6 @@ def add_inits_to_dir(path):
             (child / '__init__.py').touch()
 
 
-
 @click.command()
 @click.argument(
     'inputs', nargs=-1, required=True, type=click.Path(exists=True))
@@ -115,7 +114,10 @@ def main(inputs, output, github, safe, package_python):
 
             outputfilename.parent.mkdir(parents=True, exist_ok=True)
             outputfilename.write_text('\n\n'.join(codeblocks))
+<<<<<<< HEAD
             if package_python:
                 add_inits_to_dir(outputbasedir)
 
+=======
+>>>>>>> simplify file write and make_directories
 
