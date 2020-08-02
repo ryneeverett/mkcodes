@@ -83,24 +83,6 @@ def get_files(inputs):
                 yield path, path.parent
 
 
-def makedirs(directory):
-    to_make = []
-
-    while directory:
-        try:
-            os.mkdir(directory)
-        except FileNotFoundError:
-            directory, tail = os.path.split(directory)
-            to_make.append(tail)
-        else:
-            with open(os.path.join(directory, '__init__.py'), 'w'):
-                pass
-            if to_make:
-                directory = os.path.join(directory, to_make.pop())
-            else:
-                break
-
-
 @click.command()
 @click.argument(
     'inputs', nargs=-1, required=True, type=click.Path(exists=True))
@@ -111,7 +93,6 @@ def makedirs(directory):
               help='Allow code blocks without language hints.')
 def main(inputs, output, github, safe):
     collect_codeblocks = github_codeblocks if github else markdown_codeblocks
-    # to output deep trees with a file pattern
     # we should break out the directory and the filename pattern
     outputbasedir = Path(output).parent
     outputbasename = Path(output).name
@@ -125,13 +106,11 @@ def main(inputs, output, github, safe):
             filedir =fp.parent.relative_to(input_path)
             filename = fp.stem
 
-            # stitch together the OUTPUT base directory, with the input directories
+            # stitch together the OUTPUT base directory with the input directories
             # add the file format at the end.
             outputfilename = outputbasedir / filedir / outputbasename.format(name=filename)
 
-            outputdir = os.path.dirname(outputfilename)
-            if not os.path.exists(outputdir):
-                makedirs(outputdir)
+            # make sure path exists, don't care if it already does
+            outputfilename.parent.mkdir(parents=True, exist_ok=True)
+            outputfilename.write_text('\n\n'.join(codeblocks))
 
-            with open(outputfilename, 'w') as outputfile:
-                outputfile.write('\n\n'.join(codeblocks))
