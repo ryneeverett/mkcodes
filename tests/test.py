@@ -90,6 +90,7 @@ class TestInputs(TestBase):
         self.assertTrue(self._output_path_exists('some.py'))
         self.assertTrue(self._output_path_exists('other.py'))
         self.assertTrue(self._output_path_exists('nest/deep.py'))
+        self.assertTrue(self._output_path_exists('nest/more/why.py'))
 
     def test_multiple(self):
         subprocess.call([
@@ -116,6 +117,15 @@ class TestInputs(TestBase):
 
             backticks = range(5, 7)
             """)
+
+    def test_prefixed_deep_blocks(self):
+        subprocess.call([
+            'mkcodes', '--output', 'tests/output/test_{name}.py', '--github',
+            'tests/data'])
+        self.assertTrue(self._output_path_exists('test_some.py'))
+        self.assertTrue(self._output_path_exists('test_other.py'))
+        self.assertTrue(self._output_path_exists('nest/test_deep.py'))
+        self.assertTrue(self._output_path_exists('nest/more/test_why.py'))
 
     @unittest.skip
     def test_glob(self):
