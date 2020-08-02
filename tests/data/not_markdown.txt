@@ -1,0 +1,6 @@
+# Why does this not get found?
+even though this is markdown formatted, it is not markdown. It shouldn't get processed.
+
+```py
+print("even if I contain a code block, I'm not in a markdown document")
+```
