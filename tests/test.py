@@ -141,6 +141,16 @@ class TestInputs(TestBase):
         self.assertIn('Ran 2 tests', proc.stderr)
         self.assertIn('OK', proc.stderr)
 
+    def test_other_languages(self):
+        subprocess.call([
+            'mkcodes', '--output', 'tests/output/test_{name}.py', '--github',
+            'tests/langdata'])
+        self.assertTrue(self._output_path_exists('test_java.java'))
+        self.assertTrue(self._output_path_exists('test_csharp.cs'))
+        self.assertTrue(self._output_path_exists('test_multilang.cs'))
+        self.assertTrue(self._output_path_exists('test_multilang.java'))
+        self.assertTrue(self._output_path_exists('test_multilang.py'))
+
     @unittest.skip
     def test_glob(self):
         raise NotImplementedError
