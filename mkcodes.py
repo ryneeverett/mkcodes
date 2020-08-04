@@ -13,7 +13,7 @@ else:
     from markdown.extensions import Extension
     from markdown.treeprocessors import Treeprocessor
 
-
+"""
 def github_codeblocks(filepath, safe):
     codeblocks = []
     codeblock_re = r'^```.*'
@@ -41,6 +41,70 @@ def github_codeblocks(filepath, safe):
                 if not re.match(codeblock_open_re, line):
                     python = False
     return codeblocks
+"""
+
+def github_codeblocks(filepath, safe):
+    codeblocks = []
+    codeblock_re = r'^```.*'
+    codeblock_open_re = r'^```(`*)(py|python){0}$'.format('' if safe else '?')
+
+    # import pudb; pu.db
+    with open(filepath, 'r') as f:
+        block = []
+        language = None
+        in_codeblock = False
+
+        for line in f.readlines():
+            # does this line contain a codeblock begin or end?
+            codeblock_delimiter = re.match(codeblock_re, line)
+
+            if in_codeblock:
+                if codeblock_delimiter:
+                    # we are closing a codeblock
+                    if language:
+                        # finished a codeblock, append everything
+                        codeblocks.append(''.join(block))
+
+                    block = []
+                    if safe:
+                        language = None
+                    in_codeblock = False
+                else:
+                    block.append(line)
+            elif codeblock_delimiter:
+                # beginning a codeblock
+                in_codeblock = True
+                # does it have a language?
+                lang_match = re.match(codeblock_open_re, line)
+                if not lang_match:
+                    language = None
+                else:
+                    language = lang_match.group(2)
+
+    return codeblocks
+
+def github_markdown_codeblocks(filepath, safe):
+    import markdown
+    codeblocks =[]
+    if safe:
+        warnings.warn("'safe' option not available in 'github-markdown' mode.")
+
+    class DoctestCollector(Treeprocessor):
+        def run(self, root):
+            nonlocal codeblocks
+            import pudb; pu.db
+            codeblocks = (block.text for block in root.iterfind('./pre/code'))
+
+    class DoctestExtension(Extension):
+        def extendMarkdown(self, md, md_globals):
+            md.registerExtension(self)
+            md.treeprocessors.add("doctest", DoctestCollector(md), '_end')
+
+    doctestextension = DoctestExtension()
+    markdowner = markdown.Markdown(extensions=['fenced_code', doctestextension])
+    markdowner.convertFile(input=str(filepath), output=os.devnull)
+    return codeblocks
+
 
 
 def markdown_codeblocks(filepath, safe):
@@ -63,7 +127,7 @@ def markdown_codeblocks(filepath, safe):
 
     doctestextension = DoctestExtension()
     markdowner = markdown.Markdown(extensions=[doctestextension])
-    markdowner.convertFile(str(filepath), output=os.devnull)
+    markdowner.convertFile(input=str(filepath), output=os.devnull)
     return codeblocks
 
 
