@@ -42,13 +42,22 @@ def github_codeblocks(filepath, safe):
                     python = False
     return codeblocks
 """
+# much easier to write the other names that an extension is known by
+ext_map = {'py': ['python', 'py', 'python2', 'python3', 'py2', 'py3', 'PYTHON', 'Python']}
+ext_map['cs'] = ['c#','csharp', 'c-sharp', 'cs', 'CS', 'CSHARP', 'C#']
+ext_map['java'] = ['java', 'JAVA', 'Java']
+# then invert that mapping
+language_map = {}
+for ext, lang_strings in ext_map.items():
+    for lang_string in lang_strings:
+        language_map[lang_string] = ext
 
-def github_codeblocks(filepath, safe):
+
+def github_codeblocks(filepath, safe, default_lang='py'):
     codeblocks = []
     codeblock_re = r'^```.*'
     codeblock_open_re = r'^```(`*)(py|python){0}$'.format('' if safe else '?')
 
-    # import pudb; pu.db
     with open(filepath, 'r') as f:
         block = []
         language = None
@@ -76,14 +85,19 @@ def github_codeblocks(filepath, safe):
                 in_codeblock = True
                 # does it have a language?
                 lang_match = re.match(codeblock_open_re, line)
-                if not lang_match:
-                    language = None
-                else:
+                if lang_match:
                     language = lang_match.group(2)
-
+                    if not safe:
+                        # we can sub a default language if not safe
+                        language = language or default_lang
+                else:
+                    if safe:
+                        language = None
+                    else:
+                        language = default_lang
     return codeblocks
 
-def github_markdown_codeblocks(filepath, safe):
+def github_markdown_codeblocks(filepath, safe, default_lang='py'):
     import markdown
     codeblocks =[]
     if safe:
@@ -92,7 +106,6 @@ def github_markdown_codeblocks(filepath, safe):
     class DoctestCollector(Treeprocessor):
         def run(self, root):
             nonlocal codeblocks
-            import pudb; pu.db
             codeblocks = (block.text for block in root.iterfind('./pre/code'))
 
     class DoctestExtension(Extension):
