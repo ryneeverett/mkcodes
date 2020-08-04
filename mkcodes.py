@@ -114,10 +114,8 @@ def main(inputs, output, github, safe, package_python):
 
             outputfilename.parent.mkdir(parents=True, exist_ok=True)
             outputfilename.write_text('\n\n'.join(codeblocks))
-<<<<<<< HEAD
             if package_python:
                 add_inits_to_dir(outputbasedir)
 
-=======
->>>>>>> simplify file write and make_directories
-
+            if package_python:
+                add_inits_to_dir(outputbasedir)
