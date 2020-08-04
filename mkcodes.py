@@ -79,6 +79,15 @@ def get_files(inputs):
         elif path.suffix in markdown_extensions:
             yield path, path.parent
 
+def add_inits_to_dir(path):
+    """Recursively add __init__.py files to a directory
+    This compensates for https://bugs.python.org/issue23882 and https://bugs.python.org/issue35617
+    """
+    for child in path.rglob('*'):
+        if child.is_dir():
+            (child / '__init__.py').touch()
+
+
 
 @click.command()
 @click.argument(
@@ -88,7 +97,9 @@ def get_files(inputs):
               help='Github-flavored fence blocks or pure markdown.')
 @click.option('--safe/--unsafe', default=True,
               help='Allow code blocks without language hints.')
-def main(inputs, output, github, safe):
+@click.option('--package-python', default=True,
+              help='Add __init__.py files to python output to aid in test discovery')
+def main(inputs, output, github, safe, package_python):
     collect_codeblocks = github_codeblocks if github else markdown_codeblocks
     outputbasedir = Path(output).parent
     outputbasename = Path(output).name
@@ -104,4 +115,7 @@ def main(inputs, output, github, safe):
 
             outputfilename.parent.mkdir(parents=True, exist_ok=True)
             outputfilename.write_text('\n\n'.join(codeblocks))
+            if package_python:
+                add_inits_to_dir(outputbasedir)
+
 
