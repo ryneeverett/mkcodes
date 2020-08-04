@@ -29,8 +29,6 @@ Running Tests
 -------------
 
 ```sh
-cd /path/to/mkcodes
 python setup.py develop
-pip install -r test-requirements.txt
 ./test
 ```
