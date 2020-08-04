@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 import re
-import glob
 import warnings
 
 import click
@@ -69,18 +68,16 @@ def markdown_codeblocks(filepath, safe):
 
 
 def get_files(inputs):
-    """ Take in an iterable of paths, yield the files and parent dirs in those paths"""
+    """ Yield the files and parent dirs from an iterable of paths. """
     markdown_extensions = ['.markdown', '.mdown', '.mkdn', '.mkd', '.md']
     for i in inputs:
         path = Path(i)
         if path.is_dir():
-            """ let's iterate the directory and yield files """
             for child in path.rglob('*'):
                 if child.is_file() and child.suffix in markdown_extensions:
                     yield child, path
-        else:
-            if path.suffix in markdown_extensions:
-                yield path, path.parent
+        elif path.suffix in markdown_extensions:
+            yield path, path.parent
 
 
 def makedirs(directory):
@@ -111,8 +108,6 @@ def makedirs(directory):
               help='Allow code blocks without language hints.')
 def main(inputs, output, github, safe):
     collect_codeblocks = github_codeblocks if github else markdown_codeblocks
-    # to output deep trees with a file pattern
-    # we should break out the directory and the filename pattern
     outputbasedir = Path(output).parent
     outputbasename = Path(output).name
 
@@ -120,13 +115,9 @@ def main(inputs, output, github, safe):
         codeblocks = collect_codeblocks(filepath, safe)
 
         if codeblocks:
-            #we want the path to the file, and the file without an extension
             fp = Path(filepath)
-            filedir =fp.parent.relative_to(input_path)
+            filedir = fp.parent.relative_to(input_path)
             filename = fp.stem
-
-            # stitch together the OUTPUT base directory, with the input directories
-            # add the file format at the end.
             outputfilename = outputbasedir / filedir / outputbasename.format(name=filename)
 
             outputdir = os.path.dirname(outputfilename)
