@@ -11,7 +11,7 @@ public void Sum(int a, int b)
 
 And we know that it is testable.
 
-```cs
+```csharp
 [Testclass]
 public class UnitTest1
 {

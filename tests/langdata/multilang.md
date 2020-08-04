@@ -26,3 +26,9 @@ class HelloWorld {
   }
 }
 ```
+
+We want to have a react vue jquery frontend. Assume that the code sample below has a testable extension as the language
+
+```js
+consol.log('Hello, world");
+```
