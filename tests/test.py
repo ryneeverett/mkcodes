@@ -2,6 +2,7 @@ import os
 import shutil
 import textwrap
 import unittest
+import subprocess
 
 import click.testing
 
@@ -130,6 +131,14 @@ class TestInputs(TestBase):
         self.assertTrue(self._output_path_exists('test_other.py'))
         self.assertTrue(self._output_path_exists('nest/test_deep.py'))
         self.assertTrue(self._output_path_exists('nest/more/test_why.py'))
+        self.assertTrue(self._output_path_exists('nest/less/test_why.py'))
+
+        # Check that mkcodes can actually output a valid test directory.
+        proc = subprocess.run(
+            ['python3', '-m', 'unittest', 'discover', 'tests/output'],
+            capture_output=True, text=True)
+        self.assertIn('Ran 2 tests', proc.stderr)
+        self.assertIn('OK', proc.stderr)
 
     @unittest.skip
     def test_glob(self):
