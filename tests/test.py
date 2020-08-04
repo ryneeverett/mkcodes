@@ -151,6 +151,7 @@ class TestInputs(TestBase):
         self.assertTrue(self._output_path_exists('test_multilang.cs'))
         self.assertTrue(self._output_path_exists('test_multilang.java'))
         self.assertTrue(self._output_path_exists('test_multilang.py'))
+        self.assertTrue(self._output_path_exists('test_multilang.js'))
 
     @unittest.skip
     def test_glob(self):
