@@ -2,7 +2,10 @@ import os
 import shutil
 import textwrap
 import unittest
-import subprocess
+
+import click.testing
+
+import mkcodes
 
 
 class TestBase(unittest.TestCase):
@@ -13,8 +16,9 @@ class TestBase(unittest.TestCase):
 
     @classmethod
     def call(cls, *flags, inputfile='tests/data/some.md'):
-        subprocess.call([
-            'mkcodes', '--output', cls.outputfile] + list(flags) + [inputfile])
+        runner = click.testing.CliRunner()
+        runner.invoke(mkcodes.main,
+                      ['--output', cls.outputfile] + list(flags) + [inputfile])
 
     def assertFileEqual(self, filename, expected):
         with open(filename, 'r') as output:
@@ -67,8 +71,8 @@ class TestInputs(TestBase):
         return os.path.exists(os.path.join('tests/output', path))
 
     @classmethod
-    def call(cls, **kwargs):
-        super().call('--github', **kwargs)
+    def call(cls, *args, **kwargs):
+        super().call('--github', *args, **kwargs)
 
     def test_file(self):
         self.call()
@@ -84,17 +88,16 @@ class TestInputs(TestBase):
         self.assertTrue(self._output_path_exists('output.py'))
 
     def test_directory_recursive(self):
-        subprocess.call([
-            'mkcodes', '--output', 'tests/output/{name}.py', '--github',
-            'tests/data'])
+        self.call(
+            '--output', 'tests/output/{name}.py', '--github', 'tests/data')
         self.assertTrue(self._output_path_exists('some.py'))
         self.assertTrue(self._output_path_exists('other.py'))
         self.assertTrue(self._output_path_exists('nest/deep.py'))
 
     def test_multiple(self):
-        subprocess.call([
-            'mkcodes', '--output', 'tests/output/{name}.py', '--github',
-            'tests/data/some.md', 'tests/data/other.md'])
+        self.call(
+            '--output', 'tests/output/{name}.py', '--github',
+            'tests/data/some.md', 'tests/data/other.md')
         self.assertOutputFileEqual('some.py', """\
             bar = False
 
@@ -107,9 +110,9 @@ class TestInputs(TestBase):
         self.assertFalse(self._output_path_exists('nest/deep.py'))
 
     def test_unexistant_output_directory(self):
-        subprocess.call([
-            'mkcodes', '--output', 'tests/output/unexistant/{name}.py',
-            '--github', 'tests/data/some.md'])
+        self.call(
+            '--output', 'tests/output/unexistant/{name}.py',
+            '--github', 'tests/data/some.md')
         self.assertOutputFileEqual('unexistant/some.py', """\
             bar = False
 

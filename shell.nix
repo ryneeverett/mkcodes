@@ -13,9 +13,6 @@ let
       pkgs.python3Packages.click
     ];
     checkInputs = testDependencies;
-
-    # FIXME
-    doCheck = false;
   };
 in
   pkgs.mkShell {
