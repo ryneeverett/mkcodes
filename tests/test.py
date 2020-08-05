@@ -152,6 +152,10 @@ class TestInputs(TestBase):
         self.assertTrue(self._output_path_exists('test_multilang.java'))
         self.assertTrue(self._output_path_exists('test_multilang.py'))
         self.assertTrue(self._output_path_exists('test_multilang.js'))
+        self.assertTrue(self._output_path_exists('no_py_tree/test_clean.js'))
+        self.assertFalse(self._output_path_exists('no_py_tree/__init__.py'))
+        self.assertTrue(self._output_path_exists('pytree/test_buried.py'))
+        self.assertTrue(self._output_path_exists('pytree/__init__.py'))
 
     @unittest.skip
     def test_glob(self):
