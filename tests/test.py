@@ -142,9 +142,9 @@ class TestInputs(TestBase):
         self.assertIn('OK', proc.stderr)
 
     def test_other_languages(self):
-        subprocess.call([
-            'mkcodes', '--output', 'tests/output/test_{name}.{ext}',
-            '--github', 'tests/langdata'])
+        self.call(
+            '--output', 'tests/output/test_{name}.{ext}',
+            '--github', 'tests/langdata')
         self.assertTrue(self._output_path_exists('test_java.java'))
         self.assertTrue(self._output_path_exists('test_csharp.cs'))
         self.assertFalse(self._output_path_exists('test_csharp.csharp'))
