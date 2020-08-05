@@ -43,8 +43,6 @@ def github_codeblocks(filepath, safe, default_lang='py'):
                     # we are closing a codeblock
                     if language:
                         # finished a codeblock, append everything
-                        # codeblocks.append(''.join(block))
-                        # import pudb; pu.db
                         ext = language_map.get(language, language)
                         blocks = codeblocks.get(ext, [])
                         blocks.append(''.join(block))
@@ -111,16 +109,20 @@ def get_files(inputs):
         elif path.suffix in markdown_extensions:
             yield path, path.parent
 
+
 def add_inits_along_path(from_path, to_path):
     """Recursively add __init__.py files to a directory
-    This compensates for https://bugs.python.org/issue23882 and https://bugs.python.org/issue35617
+    This compensates for https://bugs.python.org/issue23882
+    and https://bugs.python.org/issue35617
     """
     to_path = to_path.expanduser().resolve()
     from_path = from_path.expanduser().resolve()
-    if to_path.relative_to_path(from_path):
-        (to_path / '__init__.py').to_pathuch()
-        if from_path.resolve() != to_path.parent.resolve():
-            add_inits_along_path(from_path, to_path.parent()
+    (to_path / '__init__.py').touch()
+    if to_path == from_path:
+        return
+    if to_path.relative_to(from_path):
+        if from_path != to_path.parent:
+            add_inits_along_path(from_path, to_path.parent)
 
 
 @click.command()
@@ -132,7 +134,7 @@ def add_inits_along_path(from_path, to_path):
 @click.option('--safe/--unsafe', default=True,
               help='Allow code blocks without language hints.')
 @click.option('--package-python', default=True,
-              help='Add __init__.py files to python output to aid in test discovery')
+              help='Add __init__.py files to python dirs for test discovery')
 @click.option('--default_lang', default='py',
               help='Assumed language for code blocks without language hits.')
 def main(inputs, output, github, safe, package_python, default_lang):
