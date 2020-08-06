@@ -14,10 +14,12 @@ else:
     from markdown.treeprocessors import Treeprocessor
 
 # much easier to write the other names that an extension is known by
-ext_map = {'py': ['python', 'py', 'python2', 'python3', 'py2', 'py3',
-           'PYTHON', 'Python']}
-ext_map['cs'] = ['c#', 'csharp', 'c-sharp', 'cs', 'CS', 'CSHARP', 'C#']
-ext_map['java'] = ['java', 'JAVA', 'Java']
+ext_map = {
+    'cs': ['c#', 'csharp', 'c-sharp', 'cs', 'CS', 'CSHARP', 'C#'],
+    'java': ['java', 'JAVA', 'Java'],
+    'py': ['python', 'py', 'python2', 'python3', 'py2', 'py3', 'PYTHON',
+           'Python'],
+}
 # then invert that mapping
 language_map = {}
 for ext, lang_strings in ext_map.items():
@@ -45,9 +47,7 @@ def github_codeblocks(filepath, safe, default_lang='py'):
                     if language:
                         # finished a codeblock, append everything
                         ext = language_map.get(language, language)
-                        blocks = codeblocks.get(ext, [])
-                        blocks.append(''.join(block))
-                        codeblocks[ext] = blocks
+                        codeblocks.setdefault(ext, []).append(''.join(block))
 
                     block = []
                     if safe:
@@ -84,8 +84,8 @@ def markdown_codeblocks(filepath, safe, default_lang='py'):
     class DoctestCollector(Treeprocessor):
         def run(self, root):
             nonlocal codeblocks
-            codeblocks[default_lang] =\
-                (block.text for block in root.iterfind('./pre/code'))
+            codeblocks[default_lang] = (
+                block.text for block in root.iterfind('./pre/code'))
 
     class DoctestExtension(Extension):
         def extendMarkdown(self, md, md_globals):
