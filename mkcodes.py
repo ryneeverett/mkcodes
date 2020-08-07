@@ -15,10 +15,8 @@ else:
 
 # much easier to write the other names that an extension is known by
 ext_map = {
-    'cs': ['c#', 'csharp', 'c-sharp', 'cs', 'CS', 'CSHARP', 'C#'],
-    'java': ['java', 'JAVA', 'Java'],
-    'py': ['python', 'py', 'python2', 'python3', 'py2', 'py3', 'PYTHON',
-           'Python'],
+    'cs': ['c#', 'csharp', 'c-sharp'],
+    'py': ['python', 'python2', 'python3', 'py2', 'py3'],
 }
 # then invert that mapping
 language_map = {}
@@ -62,6 +60,7 @@ def github_codeblocks(filepath, safe, default_lang='py'):
                 lang_match = re.match(codeblock_open_re, line)
                 if lang_match:
                     language = lang_match.group(2)
+                    language = language.lower() if language else language
                     if not safe:
                         # we can sub a default language if not safe
                         language = language or default_lang
@@ -160,5 +159,5 @@ def main(inputs, output, github, safe, package_python, default_lang):
                 # make sure path exists, don't care if it already does
                 outputfilename.parent.mkdir(parents=True, exist_ok=True)
                 outputfilename.write_text('\n\n'.join(blocks))
-                if package_python and lang=='py':
+                if package_python and lang == 'py':
                     add_inits_along_path(outputbasedir, outputfilename.parent)
