@@ -13,12 +13,16 @@ else:
     from markdown.extensions import Extension
     from markdown.treeprocessors import Treeprocessor
 
-# much easier to write the other names that an extension is known by
+# There does not seem to be any specification for which info strings are
+# accepted, but python-markdown passes it directly to pygments, so their
+# mapping can be used as a guide:
+# https://github.com/pygments/pygments/blob/master/pygments/lexers/_mapping.py
 ext_map = {
     'cs': ['c#', 'csharp', 'c-sharp'],
     'py': ['python', 'python2', 'python3', 'py2', 'py3'],
 }
-# then invert that mapping
+# It's more straightforward to express the mappings by extension, but we
+# actually need an inverted mapping.
 language_map = {}
 for ext, lang_strings in ext_map.items():
     for lang_string in lang_strings:
