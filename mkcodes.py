@@ -64,11 +64,6 @@ def github_codeblocks(filepath, safe, default_lang='py'):
                     if not safe:
                         # we can sub a default language if not safe
                         language = language or default_lang
-                else:
-                    if safe:
-                        language = None
-                    else:
-                        language = default_lang
     return codeblocks
 
 
