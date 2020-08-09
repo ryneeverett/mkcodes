@@ -51,6 +51,10 @@ def github_codeblocks(filepath, safe, default_lang='py'):
                         # finished a codeblock, append everything
                         ext = language_map.get(language, language)
                         codeblocks.setdefault(ext, []).append(''.join(block))
+                    else:
+                        warnings.warn('No language hint found in safe mode. ' +
+                                      'Skipping block beginning with: ' +
+                                      block[0])
 
                     # Reset State
                     block = []
