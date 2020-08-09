@@ -35,6 +35,7 @@ def github_codeblocks(filepath, safe, default_lang='py'):
     codeblock_open_re = r'^```(`*)(\w+){0}$'.format('' if safe else '?')
 
     with open(filepath, 'r') as f:
+        # Initialize State
         block = []
         language = None
         in_codeblock = False
@@ -51,9 +52,9 @@ def github_codeblocks(filepath, safe, default_lang='py'):
                         ext = language_map.get(language, language)
                         codeblocks.setdefault(ext, []).append(''.join(block))
 
+                    # Reset State
                     block = []
-                    if safe:
-                        language = None
+                    language = None
                     in_codeblock = False
                 else:
                     block.append(line)
