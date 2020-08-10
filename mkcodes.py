@@ -139,8 +139,8 @@ def add_inits_along_path(from_path, to_path):
               help='Allow code blocks without language hints.')
 @click.option('--package-python', default=True,
               help='Add __init__.py files to python dirs for test discovery')
-@click.option('--default_lang', default='py',
-              help='Assumed language for code blocks without language hits.')
+@click.option('--default-lang', default='py',
+              help='Assumed language for code blocks without language hints.')
 def main(inputs, output, github, safe, package_python, default_lang):
     collect_codeblocks = github_codeblocks if github else markdown_codeblocks
     outputbasedir = Path(output).parent
