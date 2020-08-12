@@ -140,6 +140,25 @@ class TestInputs(TestBase):
         self.assertIn('Ran 2 tests', proc.stderr)
         self.assertIn('OK', proc.stderr)
 
+    def test_other_languages(self):
+        self.call(
+            '--output', 'tests/output/test_{name}.{ext}',
+            '--github', 'tests/langdata')
+        self.assertTrue(self._output_path_exists('test_java.java'))
+        self.assertTrue(self._output_path_exists('test_csharp.cs'))
+        self.assertFalse(self._output_path_exists('test_csharp.csharp'))
+        self.assertTrue(self._output_path_exists('test_multilang.cs'))
+        self.assertTrue(self._output_path_exists('test_multilang.java'))
+        self.assertTrue(self._output_path_exists('test_multilang.py'))
+        self.assertTrue(self._output_path_exists('test_multilang.js'))
+        self.assertTrue(self._output_path_exists('no_py_tree/test_clean.js'))
+        self.assertFalse(self._output_path_exists('no_py_tree/__init__.py'))
+        self.assertTrue(self._output_path_exists('pytree/test_buried.py'))
+        self.assertTrue(self._output_path_exists('pytree/__init__.py'))
+
+        # __init__.py should not be created in the base output directory.
+        self.assertFalse(self._output_path_exists('__init__.py'))
+
     @unittest.skip
     def test_glob(self):
         raise NotImplementedError
