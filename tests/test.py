@@ -157,6 +157,9 @@ class TestInputs(TestBase):
         self.assertTrue(self._output_path_exists('pytree/test_buried.py'))
         self.assertTrue(self._output_path_exists('pytree/__init__.py'))
 
+        # __init__.py should not be created in the base output directory.
+        self.assertFalse(self._output_path_exists('__init__.py'))
+
     @unittest.skip
     def test_glob(self):
         raise NotImplementedError
