@@ -96,7 +96,6 @@ class TestInputs(TestBase):
         self.assertTrue(self._output_path_exists('nest/deep.py'))
         self.assertFalse(self._output_path_exists('not_markdown.py'))
         self.assertTrue(self._output_path_exists('nest/more/why.py'))
-        self.assertFalse(self._output_path_exists('not_markdown.py'))
 
     def test_multiple(self):
         self.call(
