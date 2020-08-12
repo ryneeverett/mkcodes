@@ -139,7 +139,7 @@ def add_inits_along_path(from_path, to_path):
               help='Github-flavored fence blocks or pure markdown.')
 @click.option('--safe/--unsafe', default=True,
               help='Allow code blocks without language hints.')
-@click.option('--package-python', default=True,
+@click.option('--package-python', default=True, is_flag=True,
               help='Add __init__.py files to python dirs for test discovery')
 @click.option('--default-lang', default='py',
               help='Assumed language for code blocks without language hints.')
