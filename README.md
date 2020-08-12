@@ -1,4 +1,4 @@
-A command-line utility for pulling code blocks out of markdown files. Currently only handles python code blocks.
+A command-line utility for pulling code blocks out of markdown files.
 
 ```sh
 $ pip install -e git+https://github.com/ryneeverett/mkcodes.git#egg=mkcodes
@@ -12,7 +12,11 @@ Usage: mkcodes [OPTIONS] INPUTS...
 Options:
   --output TEXT
   --github / --markdown  Github-flavored fence blocks or pure markdown.
-  --safe / --unsafe      Only use code blocks with language hints.
+  --safe / --unsafe      Allow code blocks without language hints.
+  --package-python       Add __init__.py files to python dirs for test
+                         discovery
+  --default-lang TEXT    Assumed language for code blocks without language
+                         hints.
   --help                 Show this message and exit.
 ```
 
