@@ -121,12 +121,15 @@ def add_inits_along_path(from_path, to_path):
     """
     to_path = to_path.expanduser().resolve()
     from_path = from_path.expanduser().resolve()
+
+    # Sanity Check: This will raise an exception if paths aren't relative.
+    to_path.relative_to(from_path)
+
     (to_path / '__init__.py').touch()
     if to_path == from_path:
         return
-    if to_path.relative_to(from_path):
-        if from_path != to_path.parent:
-            add_inits_along_path(from_path, to_path.parent)
+    if from_path != to_path.parent:
+        add_inits_along_path(from_path, to_path.parent)
 
 
 @click.command()
