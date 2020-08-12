@@ -125,10 +125,10 @@ def add_inits_along_path(from_path, to_path):
     # Sanity Check: This will raise an exception if paths aren't relative.
     to_path.relative_to(from_path)
 
-    if to_path == from_path:
-        return
-    (to_path / '__init__.py').touch()
-    add_inits_along_path(from_path, to_path.parent)
+    # Continue recursing if we haven't reached the base output directory.
+    if to_path != from_path:
+        (to_path / '__init__.py').touch()
+        add_inits_along_path(from_path, to_path.parent)
 
 
 @click.command()
