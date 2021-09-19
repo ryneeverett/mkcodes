@@ -1,9 +1,11 @@
 [tool.poetry]
 name = "mkcodes"
-version = "0.1.0"
+version = "0.1.1"
 description = "A command-line utility for pulling code blocks out of markdown files."
 authors = ["ryneeverett <ryneeverett@gmail.com>"]
 license = "Apache-2.0"
+readme = "README.md"
+homepage = "https://github.com/ryneeverett/mkcodes"
 
 [tool.poetry.dependencies]
 python = "^3.8"
