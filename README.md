@@ -1,10 +1,10 @@
 A command-line utility for pulling code blocks out of markdown files.
 
 ```sh
-$ pip install -e git+https://github.com/ryneeverett/mkcodes.git#egg=mkcodes
+$ pip install mkcodes
 
 # For traditional markdown code-block support.
-$ pip install markdown
+$ pip install mkcodes[markdown]
 
 $ mkcodes --help
 Usage: mkcodes [OPTIONS] INPUTS...
@@ -33,6 +33,5 @@ Running Tests
 -------------
 
 ```sh
-python setup.py develop
 ./test
 ```

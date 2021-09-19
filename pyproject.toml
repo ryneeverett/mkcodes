@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "mkcodes"
+version = "0.1.0"
+description = "A command-line utility for pulling code blocks out of markdown files."
+authors = ["ryneeverett <ryneeverett@gmail.com>"]
+license = "Apache-2.0"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+click = "*"
+
+Markdown = { version = "*", optional = true }
+
+[tool.poetry.extras]
+markdown = ["Markdown"]
+
+[tool.poetry.dev-dependencies]
+Markdown = "*"
+
+[tool.poetry.scripts]
+"mkcodes" = "mkcodes:main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
