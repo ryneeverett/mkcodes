@@ -91,9 +91,9 @@ def markdown_codeblocks(filepath, safe, default_lang='py'):
                 block.text for block in root.iterfind('./pre/code'))
 
     class DoctestExtension(Extension):
-        def extendMarkdown(self, md, md_globals):
+        def extendMarkdown(self, md):
             md.registerExtension(self)
-            md.treeprocessors.add("doctest", DoctestCollector(md), '_end')
+            md.treeprocessors.register(DoctestCollector(md), "doctest", 175)
 
     doctestextension = DoctestExtension()
     markdowner = markdown.Markdown(extensions=[doctestextension])

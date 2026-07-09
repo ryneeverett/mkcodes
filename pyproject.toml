@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-markdown = ["Markdown"]
+markdown = ["Markdown>=3.4.0"]
 
 [project.scripts]
 mkcodes = "mkcodes:main"
