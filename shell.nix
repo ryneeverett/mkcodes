@@ -24,7 +24,7 @@ let
     extraPackages = ps: [
       ps.mkcodes
     ];
-    extras = [ "markdown" ];
+    extras = [ "markdown" "publish" ];
   });
 in
   pkgs.mkShell {
