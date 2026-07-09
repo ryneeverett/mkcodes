@@ -1,6 +1,6 @@
 [project]
 name = "mkcodes"
-version = "0.1.1"
+version = "0.2.0"
 description = "A command-line utility for pulling code blocks out of markdown files."
 authors = [
   {name = "ryneeverett", email="ryneeverett@gmail.com"},
