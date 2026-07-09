@@ -2,11 +2,12 @@
 name = "mkcodes"
 version = "0.1.1"
 description = "A command-line utility for pulling code blocks out of markdown files."
-authors = ["ryneeverett <ryneeverett@gmail.com>"]
+authors = [
+  {name = "ryneeverett", email="ryneeverett@gmail.com"},
+]
 license = "Apache-2.0"
 readme = "README.md"
 requires-python = ">=3.8"
-homepage = "https://github.com/ryneeverett/mkcodes"
 
 dependencies = [
   "click"
